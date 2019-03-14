@@ -1,14 +1,13 @@
 package pieces;
 
 import board.Square;
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ChessPiece {
     
     private Color color;
     private Square position;
-    public String sign;
+    private String sign;
     
     public ChessPiece(Color color, Square position, String sign){
         this.color = color;
@@ -42,10 +41,14 @@ public abstract class ChessPiece {
     
     public abstract boolean canCaptureKing (ChessPiece[][] board, ChessPiece king);
     
-    //protected abstract List<ChessPiece> calculateTargets (ChessPiece[][] board);
+    public abstract ChessPiece saveKingByCapture(ChessPiece[][] board, ChessPiece threat);
 
     public Color getColor() {
         return color;
+    }
+    
+    public String getSign(){
+        return sign;
     }
 
     public Square getPosition() {
@@ -61,5 +64,4 @@ public abstract class ChessPiece {
         return color + " " + this.getClass().getSimpleName();
     }
 
-    
 }
