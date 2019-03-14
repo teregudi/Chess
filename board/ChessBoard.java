@@ -11,6 +11,7 @@ import pieces.Knight;
 import pieces.Pawn;
 import pieces.Queen;
 import pieces.Rook;
+import java.lang.Object;
 
 public class ChessBoard {
     
@@ -57,7 +58,7 @@ public class ChessBoard {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (board[i][j]!=null){
-                    System.out.print(board[i][j].sign);
+                    System.out.print(board[i][j].getSign());
                 } else {
                     System.out.print("- ");
                 }
@@ -87,7 +88,7 @@ public class ChessBoard {
     
     private boolean letTheRoundBegin (Color color){
         
-        //collecting friendly and hostile pieces
+        //collecting friendly and hostile pieces, then shuffling the friendly for random order
         List<ChessPiece> friendlyPieces = new ArrayList();
         List<ChessPiece> hostilePieces = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
@@ -101,6 +102,7 @@ public class ChessBoard {
                 }
             }
         }
+        Collections.shuffle(friendlyPieces);
         
         //giving all the friendly pieces to the hostile king
         int i = 0;
@@ -119,19 +121,32 @@ public class ChessBoard {
         ((King)friendlyKing).setEnemies(hostilePieces);
         
         //calculating if it is check or not, and reacting
-        i = 0;
-        while (i<hostilePieces.size() && hostilePieces.get(i).canCaptureKing(board, friendlyKing)==false){
-            i++;
+        List<ChessPiece> threats = new ArrayList();
+        for (ChessPiece hostilePiece : hostilePieces) {
+            if (hostilePiece.canCaptureKing(board, friendlyKing)){
+                threats.add(hostilePiece);
+                System.out.println("CHECK!");
+            }
         }
-        if (i<hostilePieces.size()){
-            System.out.println("CHECK");
+        if (threats.size()==1){
+            for (ChessPiece piece : friendlyPieces) {
+                Square actualPosition = piece.getPosition();
+                ChessPiece captured = piece.saveKingByCapture(board, threats.get(0));
+                if (captured!=null){
+                    System.out.println(piece + " captures " + captured);
+                    board[actualPosition.getX()][actualPosition.getY()] = null;
+                    board[captured.getPosition().getX()][captured.getPosition().getY()] = piece;
+                    return true;
+                }
+            }
+        }
+        if (!threats.isEmpty()){
             if (!attemptToCapture(friendlyKing)){
                 return attemptToMove(friendlyKing);
             } else return true;
         }
         
-        //shuffling the pieces and attempting to capture or move
-        Collections.shuffle(friendlyPieces);
+        //attempting to capture or move
         for (ChessPiece actualPiece : friendlyPieces) {
             if (attemptToCapture(actualPiece)) return true;
         }

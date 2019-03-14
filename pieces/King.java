@@ -91,6 +91,10 @@ public class King extends ChessPiece{
         return false;
     }
     
+    public ChessPiece saveKingByCapture(ChessPiece[][] board, ChessPiece threat){
+        return null;
+    }
+    
     public boolean kingVersusKing(Square square){
         List<Square> possibleSquares = new ArrayList<>();
         for (int xPos = this.getPosition().getX()-1; xPos <= this.getPosition().getX()+1; xPos++) {
@@ -101,16 +105,6 @@ public class King extends ChessPiece{
             }
         }
         if (possibleSquares.contains(square)) return true;
-        return false;
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof King){
-            if (this.getColor()==((King)obj).getColor()){
-                return true;
-            }
-        }
         return false;
     }
 }
