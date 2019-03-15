@@ -87,11 +87,18 @@ public class King extends ChessPiece{
         return realSquares;
     }
     
+    @Override
     public boolean canCaptureKing (ChessPiece[][] board, ChessPiece king){
         return false;
     }
     
+    @Override
     public ChessPiece saveKingByCapture(ChessPiece[][] board, ChessPiece threat){
+        return null;
+    }
+    
+    @Override
+    public Square saveKingByMove(ChessPiece[][] board, List<Square> squares){
         return null;
     }
     

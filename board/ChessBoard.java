@@ -11,7 +11,6 @@ import pieces.Knight;
 import pieces.Pawn;
 import pieces.Queen;
 import pieces.Rook;
-import java.lang.Object;
 
 public class ChessBoard {
     
@@ -125,7 +124,7 @@ public class ChessBoard {
         for (ChessPiece hostilePiece : hostilePieces) {
             if (hostilePiece.canCaptureKing(board, friendlyKing)){
                 threats.add(hostilePiece);
-                System.out.println("CHECK!");
+                System.out.println("CHECK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             }
         }
         if (threats.size()==1){
@@ -137,6 +136,23 @@ public class ChessBoard {
                     board[actualPosition.getX()][actualPosition.getY()] = null;
                     board[captured.getPosition().getX()][captured.getPosition().getY()] = piece;
                     return true;
+                }
+            }
+            if (threats.get(0) instanceof Bishop || threats.get(0) instanceof Rook ||
+                    threats.get(0) instanceof Queen){
+                List<Square> squaresBetweenKingAndThreat =
+                        calculateSquaresInCheck(friendlyKing, threats.get(0));
+                if (squaresBetweenKingAndThreat!=null){
+                    for (ChessPiece piece : friendlyPieces) {
+                        Square actualPosition = piece.getPosition();
+                        Square newPosition = piece.saveKingByMove(board, squaresBetweenKingAndThreat);
+                        if (newPosition!=null){
+                            System.out.println(piece + " moves to " + newPosition);
+                            board[actualPosition.getX()][actualPosition.getY()] = null;
+                            board[newPosition.getX()][newPosition.getY()] = piece;
+                            return true;
+                        }
+                    }
                 }
             }
         }
@@ -178,5 +194,19 @@ public class ChessBoard {
             return true;
         }
         return false;
+    }
+    
+    private List<Square> calculateSquaresInCheck(ChessPiece king, ChessPiece threat){
+        List<Square> protectingSquares = null;
+        if (threat instanceof Rook){
+            protectingSquares = ((Rook)threat).calculatingProtectingSquares(king);
+        }
+        if (threat instanceof Bishop){
+            protectingSquares = ((Bishop)threat).calculatingProtectingSquares(king);
+        }
+        if (threat instanceof Queen){
+            protectingSquares = ((Queen)threat).calculatingProtectingSquares(king);
+        }
+        return protectingSquares;
     }
 }

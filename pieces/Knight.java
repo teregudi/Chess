@@ -70,19 +70,4 @@ public class Knight extends ChessPiece{
         
         return possibleSquares;
     }
-    
-    public boolean canCaptureKing (ChessPiece[][] board, ChessPiece king){
-        List<ChessPiece> possibleTargets = calculateTargets(board);
-        if (possibleTargets.contains(king)) return true;
-        return false;
-    }
-    
-    public ChessPiece saveKingByCapture(ChessPiece[][] board, ChessPiece threat){
-        List<ChessPiece> possibleTargets = calculateTargets(board);
-        if (possibleTargets.contains(threat)){
-            this.setPosition(threat.getPosition());
-            return threat;
-        }
-        return null;
-    }
 }
