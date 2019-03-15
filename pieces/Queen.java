@@ -197,18 +197,85 @@ public class Queen extends ChessPiece{
         return possibleSquares;
     }
     
-    public boolean canCaptureKing (ChessPiece[][] board, ChessPiece king){
-        List<ChessPiece> possibleTargets = calculateTargets(board);
-        if (possibleTargets.contains(king)) return true;
-        return false;
-    }
-    
-    public ChessPiece saveKingByCapture(ChessPiece[][] board, ChessPiece threat){
-        List<ChessPiece> possibleTargets = calculateTargets(board);
-        if (possibleTargets.contains(threat)){
-            this.setPosition(threat.getPosition());
-            return threat;
+    public List<Square> calculatingProtectingSquares(ChessPiece king){
+        List<Square> protectingSquares = new ArrayList<>();
+        int xPosKing = king.getPosition().getX();
+        int yPosKing = king.getPosition().getY();
+        int xPosThis = this.getPosition().getX();
+        int yPosThis = this.getPosition().getY();
+        
+        if (xPosKing==xPosThis){
+            if (yPosKing<yPosThis){
+                int yPos = yPosKing+1;
+                while (yPos<yPosThis){
+                    protectingSquares.add(new Square(xPosThis, yPos));
+                    yPos++;
+                }
+            } else {
+                int yPos = yPosThis+1;
+                while (yPos<yPosKing){
+                    protectingSquares.add(new Square(xPosThis, yPos));
+                    yPos++;
+                }
+            }
         }
-        return null;
+        
+        if (yPosKing==yPosThis){
+            if (xPosKing<xPosThis){
+                int xPos = xPosKing+1;
+                while (xPos<xPosThis){
+                    protectingSquares.add(new Square(xPos, yPosThis));
+                    xPos++;
+                }
+            } else {
+                int xPos = xPosThis+1;
+                while (xPos<xPosKing){
+                    protectingSquares.add(new Square(xPos, yPosThis));
+                    xPos++;
+                }
+            }
+        }
+        
+        if (xPosKing<xPosThis && yPosKing<yPosThis){
+            int xPos = xPosKing+1;
+            int yPos = yPosKing+1;
+            while (xPos<xPosThis && yPos<yPosThis){
+                protectingSquares.add(new Square(xPos, yPos));
+                xPos++;
+                yPos++;
+            }
+        }
+        
+        if (xPosKing<xPosThis && yPosKing>yPosThis){
+            int xPos = xPosKing+1;
+            int yPos = yPosThis+1;
+            while (xPos<xPosThis && yPos<yPosKing){
+                protectingSquares.add(new Square(xPos, yPos));
+                xPos++;
+                yPos++;
+            }
+        }
+        
+        if (xPosKing>xPosThis && yPosKing<yPosThis){
+            int xPos = xPosThis+1;
+            int yPos = yPosKing+1;
+            while (xPos<xPosKing && yPos<yPosThis){
+                protectingSquares.add(new Square(xPos, yPos));
+                xPos++;
+                yPos++;
+            }
+        }
+        
+        if (xPosKing>xPosThis && yPosKing>yPosThis){
+            int xPos = xPosThis+1;
+            int yPos = yPosThis+1;
+            while (xPos<xPosKing && yPos<yPosKing){
+                protectingSquares.add(new Square(xPos, yPos));
+                xPos++;
+                yPos++;
+            }
+        }
+        
+        return protectingSquares;
     }
 }

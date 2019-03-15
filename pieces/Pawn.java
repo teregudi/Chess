@@ -23,6 +23,7 @@ public class Pawn extends ChessPiece{
             if (xPos>=0 && xPos<8 && yPos>=0 && yPos<8 && board[xPos][yPos]!=null &&
                     board[xPos][yPos].getColor()!=this.getColor()){
                 possibleTargets.add(board[xPos][yPos]);
+                isFirstMove = false;
             }
         }
         return possibleTargets;
@@ -43,20 +44,5 @@ public class Pawn extends ChessPiece{
         }
         
         return possibleSquares;
-    }
-    
-    public boolean canCaptureKing (ChessPiece[][] board, ChessPiece king){
-        List<ChessPiece> possibleTargets = calculateTargets(board);
-        if (possibleTargets.contains(king)) return true;
-        return false;
-    }
-    
-    public ChessPiece saveKingByCapture(ChessPiece[][] board, ChessPiece threat){
-        List<ChessPiece> possibleTargets = calculateTargets(board);
-        if (possibleTargets.contains(threat)){
-            this.setPosition(threat.getPosition());
-            return threat;
-        }
-        return null;
     }
 }

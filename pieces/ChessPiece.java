@@ -1,6 +1,7 @@
 package pieces;
 
 import board.Square;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ChessPiece {
@@ -14,6 +15,10 @@ public abstract class ChessPiece {
         this.position = position;
         this.sign = sign;
     }
+    
+    protected abstract List<ChessPiece> calculateTargets(ChessPiece[][] board);
+    
+    protected abstract List<Square> calculateMovement(ChessPiece[][] board);
     
     public ChessPiece capture(ChessPiece[][] board) {
         List<ChessPiece> possibleTargets = calculateTargets(board);
@@ -35,13 +40,39 @@ public abstract class ChessPiece {
         return null;
     }
     
-    protected abstract List<ChessPiece> calculateTargets(ChessPiece[][] board);
+    public boolean canCaptureKing (ChessPiece[][] board, ChessPiece king){
+        List<ChessPiece> possibleTargets = calculateTargets(board);
+        if (possibleTargets.contains(king)) return true;
+        return false;
+    }
     
-    protected abstract List<Square> calculateMovement(ChessPiece[][] board);
+    public ChessPiece saveKingByCapture(ChessPiece[][] board, ChessPiece threat){
+        List<ChessPiece> possibleTargets = calculateTargets(board);
+        if (possibleTargets.contains(threat)){
+            this.setPosition(threat.getPosition());
+            return threat;
+        }
+        return null;
+    }
     
-    public abstract boolean canCaptureKing (ChessPiece[][] board, ChessPiece king);
-    
-    public abstract ChessPiece saveKingByCapture(ChessPiece[][] board, ChessPiece threat);
+    public Square saveKingByMove(ChessPiece[][] board, List<Square> protectingSquares){
+        List<Square> possibleSquares = calculateMovement(board);
+        List<Square> intersection = new ArrayList<>();
+        for (Square possSquare : possibleSquares) {
+            for (Square protectSquare : protectingSquares) {
+                if (possSquare.equals(protectSquare)){
+                    intersection.add(possSquare);
+                    continue;
+                }
+            }
+        }
+        if (!intersection.isEmpty()){
+            int random = (int)(Math.random()*intersection.size());
+            this.setPosition(intersection.get(random));
+            return intersection.get(random);
+        }
+        return null;
+    }
 
     public Color getColor() {
         return color;
