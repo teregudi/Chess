@@ -1,85 +1,35 @@
 package pieces;
 
 import board.Square;
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ChessPiece {
     
-    private Color color;
+    private final Color COLOR;
     private Square position;
-    private String sign;
+    private final String SIGN;
     
     public ChessPiece(Color color, Square position, String sign){
-        this.color = color;
+        this.COLOR = color;
         this.position = position;
-        this.sign = sign;
+        this.SIGN = sign;
     }
     
-    protected abstract List<ChessPiece> calculateTargets(ChessPiece[][] board);
+    public abstract List<ChessPiece> calculateTargets(ChessPiece[][] board);
     
-    protected abstract List<Square> calculateMovement(ChessPiece[][] board);
-    
-    public ChessPiece capture(ChessPiece[][] board) {
-        List<ChessPiece> possibleTargets = calculateTargets(board);
-        if (!possibleTargets.isEmpty()){
-            int random = (int)(Math.random()*possibleTargets.size());
-            this.setPosition(possibleTargets.get(random).getPosition());
-            return possibleTargets.get(random);
-        }
-        return null;
-    }
-    
-    public Square move (ChessPiece[][] board){
-        List<Square> possibleSquares = calculateMovement(board);
-        if (!possibleSquares.isEmpty()){
-            int random = (int)(Math.random()*possibleSquares.size());
-            this.setPosition(possibleSquares.get(random));
-            return possibleSquares.get(random);
-        }
-        return null;
-    }
+    public abstract List<Square> calculateMovement(ChessPiece[][] board);
     
     public boolean canCaptureKing (ChessPiece[][] board, ChessPiece king){
         List<ChessPiece> possibleTargets = calculateTargets(board);
-        if (possibleTargets.contains(king)) return true;
-        return false;
-    }
-    
-    public ChessPiece saveKingByCapture(ChessPiece[][] board, ChessPiece threat){
-        List<ChessPiece> possibleTargets = calculateTargets(board);
-        if (possibleTargets.contains(threat)){
-            this.setPosition(threat.getPosition());
-            return threat;
-        }
-        return null;
-    }
-    
-    public Square saveKingByMove(ChessPiece[][] board, List<Square> protectingSquares){
-        List<Square> possibleSquares = calculateMovement(board);
-        List<Square> intersection = new ArrayList<>();
-        for (Square possSquare : possibleSquares) {
-            for (Square protectSquare : protectingSquares) {
-                if (possSquare.equals(protectSquare)){
-                    intersection.add(possSquare);
-                    continue;
-                }
-            }
-        }
-        if (!intersection.isEmpty()){
-            int random = (int)(Math.random()*intersection.size());
-            this.setPosition(intersection.get(random));
-            return intersection.get(random);
-        }
-        return null;
+        return possibleTargets.contains(king);
     }
 
     public Color getColor() {
-        return color;
+        return COLOR;
     }
     
     public String getSign(){
-        return sign;
+        return SIGN;
     }
 
     public Square getPosition() {
@@ -92,7 +42,7 @@ public abstract class ChessPiece {
 
     @Override
     public String toString() {
-        return color + " " + this.getClass().getSimpleName();
+        return COLOR + " " + this.getClass().getSimpleName();
     }
 
 }

@@ -16,7 +16,7 @@ public class Pawn extends ChessPiece{
         else DIRECTION=1;
     }
 
-    protected List<ChessPiece> calculateTargets (ChessPiece[][] board){
+    public List<ChessPiece> calculateTargets (ChessPiece[][] board){
         List<ChessPiece> possibleTargets = new ArrayList<>();
         int xPos = this.getPosition().getX()+DIRECTION;
         for (int yPos = this.getPosition().getY()-1; yPos <= this.getPosition().getY()+1; yPos += 2) {
@@ -29,7 +29,7 @@ public class Pawn extends ChessPiece{
         return possibleTargets;
     }
     
-    protected List<Square> calculateMovement(ChessPiece[][] board){
+    public List<Square> calculateMovement(ChessPiece[][] board){
         List<Square> possibleSquares = new ArrayList<>();
         
         int xPos = this.getPosition().getX()+DIRECTION;
