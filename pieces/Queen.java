@@ -10,7 +10,7 @@ public class Queen extends ChessPiece{
         super(color, position, sign);
     }
 
-    protected List<ChessPiece> calculateTargets (ChessPiece[][] board){
+    public List<ChessPiece> calculateTargets (ChessPiece[][] board){
         List<ChessPiece> possibleTargets = new ArrayList<>();
         
         int xPos = this.getPosition().getX()+1;
@@ -115,7 +115,7 @@ public class Queen extends ChessPiece{
         return possibleTargets;
     }
     
-    protected List<Square> calculateMovement(ChessPiece[][] board){
+    public List<Square> calculateMovement(ChessPiece[][] board){
         List<Square> possibleSquares = new ArrayList<>();
         
         int xPos = this.getPosition().getX()+1;
