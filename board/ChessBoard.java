@@ -18,39 +18,39 @@ public class ChessBoard {
     
     private void setup(){
         board = new ChessPiece[8][8];
-        board[0][0] = new Rook(Color.BLACK, new Square(0,0), "BR");
-        board[0][1] = new Knight(Color.BLACK, new Square(0,1), "BL");
-        board[0][2] = new Bishop(Color.BLACK, new Square(0,2), "BB");
-        board[0][3] = new Queen(Color.BLACK, new Square(0,3), "BQ");
-        board[0][4] = new King(Color.BLACK, new Square(0,4), "BK");
-        board[0][5] = new Bishop(Color.BLACK, new Square(0,5), "BB");
-        board[0][6] = new Knight(Color.BLACK, new Square(0,6), "BL");
-        board[0][7] = new Rook(Color.BLACK, new Square(0,7), "BR");
-        board[1][0] = new Pawn(Color.BLACK, new Square(1,0), "BP");
-        board[1][1] = new Pawn(Color.BLACK, new Square(1,1), "BP");
-        board[1][2] = new Pawn(Color.BLACK, new Square(1,2), "BP");
-        board[1][3] = new Pawn(Color.BLACK, new Square(1,3), "BP");
-        board[1][4] = new Pawn(Color.BLACK, new Square(1,4), "BP");
-        board[1][5] = new Pawn(Color.BLACK, new Square(1,5), "BP");
-        board[1][6] = new Pawn(Color.BLACK, new Square(1,6), "BP");
-        board[1][7] = new Pawn(Color.BLACK, new Square(1,7), "BP");
+        board[0][0] = new Rook(Color.BLACK, new Square(0,0));
+        board[0][1] = new Knight(Color.BLACK, new Square(0,1));
+        board[0][2] = new Bishop(Color.BLACK, new Square(0,2));
+        board[0][3] = new Queen(Color.BLACK, new Square(0,3));
+        board[0][4] = new King(Color.BLACK, new Square(0,4));
+        board[0][5] = new Bishop(Color.BLACK, new Square(0,5));
+        board[0][6] = new Knight(Color.BLACK, new Square(0,6));
+        board[0][7] = new Rook(Color.BLACK, new Square(0,7));
+        board[1][0] = new Pawn(Color.BLACK, new Square(1,0));
+        board[1][1] = new Pawn(Color.BLACK, new Square(1,1));
+        board[1][2] = new Pawn(Color.BLACK, new Square(1,2));
+        board[1][3] = new Pawn(Color.BLACK, new Square(1,3));
+        board[1][4] = new Pawn(Color.BLACK, new Square(1,4));
+        board[1][5] = new Pawn(Color.BLACK, new Square(1,5));
+        board[1][6] = new Pawn(Color.BLACK, new Square(1,6));
+        board[1][7] = new Pawn(Color.BLACK, new Square(1,7));
         
-        board[6][0] = new Pawn(Color.WHITE, new Square(6,0), "WP");
-        board[6][1] = new Pawn(Color.WHITE, new Square(6,1), "WP");
-        board[6][2] = new Pawn(Color.WHITE, new Square(6,2), "WP");
-        board[6][3] = new Pawn(Color.WHITE, new Square(6,3), "WP");
-        board[6][4] = new Pawn(Color.WHITE, new Square(6,4), "WP");
-        board[6][5] = new Pawn(Color.WHITE, new Square(6,5), "WP");
-        board[6][6] = new Pawn(Color.WHITE, new Square(6,6), "WP");
-        board[6][7] = new Pawn(Color.WHITE, new Square(6,7), "WP");
-        board[7][0] = new Rook(Color.WHITE, new Square(7,0), "WR");
-        board[7][1] = new Knight(Color.WHITE, new Square(7,1), "WL");
-        board[7][2] = new Bishop(Color.WHITE, new Square(7,2), "WB");
-        board[7][3] = new Queen(Color.WHITE, new Square(7,3), "WQ");
-        board[7][4] = new King(Color.WHITE, new Square(7,4), "WK");
-        board[7][5] = new Bishop(Color.WHITE, new Square(7,5), "WB");
-        board[7][6] = new Knight(Color.WHITE, new Square(7,6), "WL");
-        board[7][7] = new Rook(Color.WHITE, new Square(7,7), "WR");
+        board[6][0] = new Pawn(Color.WHITE, new Square(6,0));
+        board[6][1] = new Pawn(Color.WHITE, new Square(6,1));
+        board[6][2] = new Pawn(Color.WHITE, new Square(6,2));
+        board[6][3] = new Pawn(Color.WHITE, new Square(6,3));
+        board[6][4] = new Pawn(Color.WHITE, new Square(6,4));
+        board[6][5] = new Pawn(Color.WHITE, new Square(6,5));
+        board[6][6] = new Pawn(Color.WHITE, new Square(6,6));
+        board[6][7] = new Pawn(Color.WHITE, new Square(6,7));
+        board[7][0] = new Rook(Color.WHITE, new Square(7,0));
+        board[7][1] = new Knight(Color.WHITE, new Square(7,1));
+        board[7][2] = new Bishop(Color.WHITE, new Square(7,2));
+        board[7][3] = new Queen(Color.WHITE, new Square(7,3));
+        board[7][4] = new King(Color.WHITE, new Square(7,4));
+        board[7][5] = new Bishop(Color.WHITE, new Square(7,5));
+        board[7][6] = new Knight(Color.WHITE, new Square(7,6));
+        board[7][7] = new Rook(Color.WHITE, new Square(7,7));
     }
     
     private void draw(){
@@ -104,12 +104,11 @@ public class ChessBoard {
         Collections.shuffle(friendlyPieces);
         
         //instantiating friendly king
-        ChessPiece friendlyKing = null;
         int i = 0;
         while (i<friendlyPieces.size() && !(friendlyPieces.get(i) instanceof King)){
             i++;
         }
-        friendlyKing = friendlyPieces.get(i);
+        ChessPiece friendlyKing = friendlyPieces.get(i);
         
         //calculating if it is check or not, and reacting to it
         List<ChessPiece> threats = new ArrayList();
@@ -121,15 +120,13 @@ public class ChessBoard {
         }
         if (threats.size()==1){
             ChessPiece threat = threats.get(0);
-            for (ChessPiece piece : friendlyPieces) {
-                if (!(piece instanceof King)){
-                    List<ChessPiece> targets = gatherLegalTargets(piece, hostilePieces, friendlyKing);
+            for (ChessPiece actualPiece : friendlyPieces) {
+                if (!(actualPiece instanceof King)){
+                    List<ChessPiece> targets = gatherLegalTargets(actualPiece, hostilePieces, friendlyKing);
                     if (targets.contains(threat)){
-                        board[threat.getPosition().getX()][threat.getPosition().getY()] = piece;
-                        board[piece.getPosition().getX()][piece.getPosition().getY()] = null;
-                        piece.setPosition(threat.getPosition());
-                        System.out.println("1111");
-                        System.out.println(piece + " captures " + threat);
+                        List<ChessPiece> threatList = new ArrayList<>();
+                        threatList.add(threat);
+                        capturePiece(actualPiece, threatList);
                         return true;
                     }
                 }
@@ -168,12 +165,7 @@ public class ChessBoard {
     private boolean attemptToCapture(ChessPiece activePiece, List<ChessPiece> hostilePieces, ChessPiece king){
         List<ChessPiece> realTargets = gatherLegalTargets(activePiece, hostilePieces, king);
             if (!realTargets.isEmpty()){
-                int random = (int)(Math.random()*realTargets.size());
-                ChessPiece victim = realTargets.get(random);
-                board[victim.getPosition().getX()][victim.getPosition().getY()] = activePiece;
-                board[activePiece.getPosition().getX()][activePiece.getPosition().getY()] = null;
-                activePiece.setPosition(victim.getPosition());
-                System.out.println(activePiece + " captures " + victim);
+                capturePiece(activePiece, realTargets);
                 return true;
             }
         return false;
@@ -182,12 +174,7 @@ public class ChessBoard {
     private boolean attemptToMove(ChessPiece activePiece, List<ChessPiece> hostilePieces, ChessPiece king){
         List<Square> realSquares = gatherLegalMoves(activePiece, hostilePieces, king);
             if (!realSquares.isEmpty()){
-                int random = (int)(Math.random()*realSquares.size());
-                Square newSquare = realSquares.get(random);
-                board[newSquare.getX()][newSquare.getY()] = activePiece;
-                board[activePiece.getPosition().getX()][activePiece.getPosition().getY()] = null;
-                activePiece.setPosition(newSquare);
-                System.out.println(activePiece + " moves to " + newSquare);
+                movePiece(activePiece, realSquares);
                 return true;
             }
         return false;
@@ -257,7 +244,34 @@ public class ChessBoard {
         return realSquares;
     }
     
-    private boolean tryToIntervene(List<Square> legalSquares, List<Square> interveningSquares, ChessPiece piece){
+    private void capturePiece(ChessPiece activePiece, List<ChessPiece> legalTargets){
+        int random = (int)(Math.random()*legalTargets.size());
+        ChessPiece victim = legalTargets.get(random);
+        board[victim.getPosition().getX()][victim.getPosition().getY()] = activePiece;
+        board[activePiece.getPosition().getX()][activePiece.getPosition().getY()] = null;
+        activePiece.setPosition(victim.getPosition());
+        System.out.println(activePiece + " captures " + victim);
+        if (activePiece instanceof Pawn && (activePiece.getPosition().getX()==0 ||
+                activePiece.getPosition().getX()==7)){
+            promotion(activePiece);
+        }
+    }
+    
+    private void movePiece(ChessPiece activePiece, List<Square> legalSquares){
+        int random = (int)(Math.random()*legalSquares.size());
+        Square newSquare = legalSquares.get(random);
+        board[newSquare.getX()][newSquare.getY()] = activePiece;
+        board[activePiece.getPosition().getX()][activePiece.getPosition().getY()] = null;
+        activePiece.setPosition(newSquare);
+        System.out.println(activePiece + " moves to " + newSquare);
+        if (activePiece instanceof Pawn && (activePiece.getPosition().getX()==0 ||
+                activePiece.getPosition().getX()==7)){
+            promotion(activePiece);
+        }
+    }
+    
+    private boolean tryToIntervene(List<Square> legalSquares, List<Square> interveningSquares,
+            ChessPiece activePiece){
         List<Square> okaySquares = new ArrayList<>();
         for (Square legalSquare : legalSquares) {
             for (Square interveningSquare : interveningSquares) {
@@ -268,11 +282,7 @@ public class ChessBoard {
             }
         }
         if (!okaySquares.isEmpty()){
-            int random = (int)(Math.random()*okaySquares.size());
-            board[okaySquares.get(random).getX()][okaySquares.get(random).getY()] = piece;
-            board[piece.getPosition().getX()][piece.getPosition().getY()] = null;
-            piece.setPosition(okaySquares.get(random));
-            System.out.println(piece + " moves to " + okaySquares.get(random));
+            movePiece(activePiece, okaySquares);
             return true;
         }
         return false;
@@ -290,5 +300,29 @@ public class ChessBoard {
             protectingSquares = ((Queen)threat).calculatingProtectingSquares(king);
         }
         return protectingSquares;
+    }
+    
+    private void promotion(ChessPiece pawn){
+        int choice = (int)(Math.random()*8+1);
+        ChessPiece piece = null;
+        switch (choice){
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5: piece = new Queen(pawn.getColor(), pawn.getPosition());
+                    board[pawn.getPosition().getX()][pawn.getPosition().getY()] = piece;
+                    break;
+            case 6: piece = new Rook(pawn.getColor(), pawn.getPosition());
+                    board[pawn.getPosition().getX()][pawn.getPosition().getY()] = piece;
+                    break;
+            case 7: piece = new Bishop(pawn.getColor(), pawn.getPosition());
+                    board[pawn.getPosition().getX()][pawn.getPosition().getY()] = piece;
+                    break;
+            case 8: piece = new Knight(pawn.getColor(), pawn.getPosition());
+                    board[pawn.getPosition().getX()][pawn.getPosition().getY()] = piece;
+                    break;
+        }
+        System.out.println(pawn+" has been promoted to "+piece);
     }
 }
