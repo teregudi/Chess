@@ -6,8 +6,8 @@ import java.util.List;
 
 public class Rook extends ChessPiece{
     
-    public Rook(Color color, Square position, String sign) {
-        super(color, position, sign);
+    public Rook(Color color, Square position) {
+        super(color, position);
     }
 
     public List<ChessPiece> calculateTargets (ChessPiece[][] board){

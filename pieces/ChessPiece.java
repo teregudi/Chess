@@ -9,10 +9,15 @@ public abstract class ChessPiece {
     private Square position;
     private final String SIGN;
     
-    public ChessPiece(Color color, Square position, String sign){
+    public ChessPiece(Color color, Square position){
         this.COLOR = color;
         this.position = position;
-        this.SIGN = sign;
+        String col = COLOR.toString().substring(0, 1);
+        String rank = this.getClass().getSimpleName().substring(0, 1);
+        if (this.getClass().getSimpleName().equals("Knight")){
+            rank = "L";
+        }
+        this.SIGN = col+rank;
     }
     
     public abstract List<ChessPiece> calculateTargets(ChessPiece[][] board);

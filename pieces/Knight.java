@@ -6,8 +6,8 @@ import java.util.List;
 
 public class Knight extends ChessPiece{
     
-    public Knight(Color color, Square position, String sign) {
-        super(color, position, sign);
+    public Knight(Color color, Square position) {
+        super(color, position);
     }
 
     public List<ChessPiece> calculateTargets (ChessPiece[][] board){

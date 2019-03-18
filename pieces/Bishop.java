@@ -6,8 +6,8 @@ import java.util.List;
 
 public class Bishop extends ChessPiece{
     
-    public Bishop(Color color, Square position, String sign) {
-        super(color, position, sign);
+    public Bishop(Color color, Square position) {
+        super(color, position);
     }
 
     public List<ChessPiece> calculateTargets (ChessPiece[][] board){
