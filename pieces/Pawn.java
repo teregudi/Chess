@@ -9,14 +9,6 @@ public class Pawn extends ChessPiece{
     private boolean isFirstMove;
     private final int DIRECTION;
     
-    public void setFirstMove(boolean b){
-        isFirstMove = b;
-    }
-    
-    public boolean getFirstMove(){
-        return isFirstMove;
-    }
-    
     public Pawn(Color color, Square position) {
         super(color, position);
         isFirstMove = true;
@@ -44,7 +36,7 @@ public class Pawn extends ChessPiece{
         if (xPos>=0 && xPos<8 && board[xPos][yPos]==null){
             possibleSquares.add(new Square(xPos, yPos));
         }
-        if (isFirstMove){
+        if ((this.getColor()==Color.WHITE && xPos==6) || (this.getColor()==Color.BLACK && xPos==1)){
             xPos = xPos + DIRECTION;
             if (xPos>=0 && xPos<8 && board[xPos][yPos]==null){
                 possibleSquares.add(new Square(xPos, yPos));

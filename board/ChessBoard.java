@@ -271,11 +271,9 @@ public class ChessBoard {
         board[activePiece.getPosition().getX()][activePiece.getPosition().getY()] = null;
         activePiece.setPosition(victim.getPosition());
         System.out.println(activePiece + " captures " + victim);
-        if (activePiece instanceof Pawn){
-            ((Pawn)activePiece).setFirstMove(false);
-            if (activePiece.getPosition().getX()==0 || activePiece.getPosition().getX()==7){
-                promotion(activePiece);
-            }
+        if (activePiece instanceof Pawn && (activePiece.getPosition().getX()==0 ||
+                activePiece.getPosition().getX()==7)){
+            promotion(activePiece);
         }
         if (activePiece instanceof King || activePiece instanceof Rook){
             try {
@@ -289,22 +287,13 @@ public class ChessBoard {
     private void movePiece(ChessPiece activePiece, List<Square> legalSquares){
         int random = (int)(Math.random()*legalSquares.size());
         Square newSquare = legalSquares.get(random);
-//        if (activePiece instanceof Pawn && ((Pawn)activePiece).getFirstMove()){
-//            Square oldSquare = activePiece.getPosition();
-//            if (Math.abs(newSquare.getX()-oldSquare.getX()) > 1){
-//                enPassant = newSquare;
-//            }
-//            ((Pawn)activePiece).setFirstMove(false);
-//        }
         board[newSquare.getX()][newSquare.getY()] = activePiece;
         board[activePiece.getPosition().getX()][activePiece.getPosition().getY()] = null;
         activePiece.setPosition(newSquare);
         System.out.println(activePiece + " moves to " + newSquare);
-        if (activePiece instanceof Pawn){
-            ((Pawn)activePiece).setFirstMove(false);
-            if (activePiece.getPosition().getX()==0 || activePiece.getPosition().getX()==7){
-                promotion(activePiece);
-            }
+        if (activePiece instanceof Pawn && (activePiece.getPosition().getX()==0 ||
+                activePiece.getPosition().getX()==7)){
+            promotion(activePiece);
         }
         if (activePiece instanceof King || activePiece instanceof Rook){
             try {
