@@ -15,6 +15,7 @@ import pieces.Rook;
 public class ChessBoard {
     
     private ChessPiece[][] board;
+    private boolean checkFlag;
     
     private void setup(){
         board = new ChessPiece[8][8];
@@ -51,6 +52,8 @@ public class ChessBoard {
         board[7][5] = new Bishop(Color.WHITE, new Square(7,5));
         board[7][6] = new Knight(Color.WHITE, new Square(7,6));
         board[7][7] = new Rook(Color.WHITE, new Square(7,7));
+        
+        checkFlag = false;
     }
     
     private void draw(){
@@ -110,14 +113,17 @@ public class ChessBoard {
         }
         ChessPiece friendlyKing = friendlyPieces.get(i);
         
-        //calculating if it is check or not, and reacting to it
+        //calculating if it is check or not
         List<ChessPiece> threats = new ArrayList();
         for (ChessPiece hostilePiece : hostilePieces) {
             if (hostilePiece.canCaptureKing(board, friendlyKing)){
                 threats.add(hostilePiece);
+                checkFlag = true;
                 System.out.println("CHECK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             }
         }
+        
+        //try to capture the threat
         if (threats.size()==1){
             ChessPiece threat = threats.get(0);
             for (ChessPiece actualPiece : friendlyPieces) {
@@ -131,6 +137,7 @@ public class ChessBoard {
                     }
                 }
             }
+            //try to move between king and threat
             if (threat instanceof Bishop || threat instanceof Rook || threat instanceof Queen){
                 List<Square> squaresBetweenKingAndThreat =
                         calculateSquaresInCheck(friendlyKing, threat);
@@ -146,13 +153,15 @@ public class ChessBoard {
                 }
             }
         }
+        //king tries to handle check on his own
         if (!threats.isEmpty()){
             if (!attemptToCapture(friendlyKing, hostilePieces, friendlyKing)){
                 return attemptToMove(friendlyKing, hostilePieces, friendlyKing);
             } else return true;
         }
         
-        //attempting to capture or move
+        //if there's no check, regular round takes place
+        checkFlag = false;
         for (ChessPiece actualPiece : friendlyPieces) {
             if (attemptToCapture(actualPiece, hostilePieces, friendlyKing)) return true;
         }
@@ -162,19 +171,24 @@ public class ChessBoard {
         return false;
     }
     
-    private boolean attemptToCapture(ChessPiece activePiece, List<ChessPiece> hostilePieces, ChessPiece king){
-        List<ChessPiece> realTargets = gatherLegalTargets(activePiece, hostilePieces, king);
-            if (!realTargets.isEmpty()){
-                capturePiece(activePiece, realTargets);
+    private boolean attemptToCapture(ChessPiece activePiece, List<ChessPiece> hostilePieces,
+            ChessPiece king){
+        List<ChessPiece> legalTargets = gatherLegalTargets(activePiece, hostilePieces, king);
+            if (!legalTargets.isEmpty()){
+                capturePiece(activePiece, legalTargets);
                 return true;
             }
         return false;
     }
     
-    private boolean attemptToMove(ChessPiece activePiece, List<ChessPiece> hostilePieces, ChessPiece king){
-        List<Square> realSquares = gatherLegalMoves(activePiece, hostilePieces, king);
-            if (!realSquares.isEmpty()){
-                movePiece(activePiece, realSquares);
+    private boolean attemptToMove(ChessPiece activePiece, List<ChessPiece> hostilePieces,
+            ChessPiece king){
+        List<Square> legalSquares = gatherLegalMoves(activePiece, hostilePieces, king);
+        if (activePiece instanceof King && !checkFlag && ((King)activePiece).getCastling()){
+            legalSquares = possibleCastling(activePiece, legalSquares, hostilePieces);
+        }
+            if (!legalSquares.isEmpty()){
+                movePiece(activePiece, legalSquares);
                 return true;
             }
         return false;
@@ -255,6 +269,13 @@ public class ChessBoard {
                 activePiece.getPosition().getX()==7)){
             promotion(activePiece);
         }
+        if (activePiece instanceof King || activePiece instanceof Rook){
+            try {
+                ((King)activePiece).falseCastling();
+            } catch (Exception e){
+                ((Rook)activePiece).falseCastling();
+            }
+        }
     }
     
     private void movePiece(ChessPiece activePiece, List<Square> legalSquares){
@@ -267,6 +288,13 @@ public class ChessBoard {
         if (activePiece instanceof Pawn && (activePiece.getPosition().getX()==0 ||
                 activePiece.getPosition().getX()==7)){
             promotion(activePiece);
+        }
+        if (activePiece instanceof King || activePiece instanceof Rook){
+            try {
+                ((King)activePiece).falseCastling();
+            } catch (Exception e){
+                ((Rook)activePiece).falseCastling();
+            }
         }
     }
     
@@ -324,5 +352,77 @@ public class ChessBoard {
                     break;
         }
         System.out.println(pawn+" has been promoted to "+piece);
+    }
+    
+    private List<Square> possibleCastling(ChessPiece activePiece, List<Square> legalSquares,
+            List<ChessPiece> hostilePieces){
+        int xPos = activePiece.getPosition().getX();
+        int yPos = activePiece.getPosition().getY();
+        
+        if (board[xPos][yPos-1]==null && board[xPos][yPos-2]==null && board[xPos][yPos-3]==null &&
+                board[xPos][0] instanceof Rook && ((Rook)board[xPos][0]).getCastling() &&
+                legalSquares.contains(new Square(xPos, yPos-1))){
+            int allClear = 0;
+            board[xPos][yPos] = null;
+            board[xPos][yPos-2] = activePiece;
+            for (ChessPiece hostPiece : hostilePieces) {
+                if (hostPiece instanceof King){
+                    if (!((King)hostPiece).kingVersusKing(new Square(xPos, yPos-2))){
+                        allClear++;
+                    }
+                    continue;
+                }
+                if (!hostPiece.canCaptureKing(board, activePiece)){
+                    allClear++;
+                }
+            }
+            board[xPos][yPos] = activePiece;
+            board[xPos][yPos-2] = null;
+            if (allClear==hostilePieces.size()){
+                legalSquares.clear();
+                legalSquares.add(new Square(xPos, yPos-2));
+                ChessPiece rook = board[xPos][0];
+                board[xPos][0] = null;
+                board[xPos][yPos-1] = rook;
+                rook.setPosition(new Square(xPos, yPos-1));
+                ((King)activePiece).falseCastling();
+                System.out.println("Castling");
+                return legalSquares;
+            }
+        }
+        
+        if (board[xPos][yPos+1]==null && board[xPos][yPos+2]==null &&
+                board[xPos][7] instanceof Rook && ((Rook)board[xPos][7]).getCastling() &&
+                legalSquares.contains(new Square(xPos, yPos+1))){
+            int allClear = 0;
+            board[xPos][yPos] = null;
+            board[xPos][yPos+2] = activePiece;
+            for (ChessPiece hostPiece : hostilePieces) {
+                if (hostPiece instanceof King){
+                    if (!((King)hostPiece).kingVersusKing(new Square(xPos, yPos+2))){
+                        allClear++;
+                    }
+                    continue;
+                }
+                if (!hostPiece.canCaptureKing(board, activePiece)){
+                    allClear++;
+                }
+            }
+            board[xPos][yPos] = activePiece;
+            board[xPos][yPos+2] = null;
+            if (allClear==hostilePieces.size()){
+                legalSquares.clear();
+                legalSquares.add(new Square(xPos, yPos+2));
+                ChessPiece rook = board[xPos][7];
+                board[xPos][7] = null;
+                board[xPos][yPos+1] = rook;
+                rook.setPosition(new Square(xPos, yPos+1));
+                ((King)activePiece).falseCastling();
+                System.out.println("Castling");
+                return legalSquares;
+            }
+        }
+        
+        return legalSquares;
     }
 }
