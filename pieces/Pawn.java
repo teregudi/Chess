@@ -23,7 +23,6 @@ public class Pawn extends ChessPiece{
             if (xPos>=0 && xPos<8 && yPos>=0 && yPos<8 && board[xPos][yPos]!=null &&
                     board[xPos][yPos].getColor()!=this.getColor()){
                 possibleTargets.add(board[xPos][yPos]);
-                isFirstMove = false;
             }
         }
         return possibleTargets;
@@ -34,13 +33,14 @@ public class Pawn extends ChessPiece{
         
         int xPos = this.getPosition().getX()+DIRECTION;
         int yPos = this.getPosition().getY();
-        while (true) {
-            if (xPos>=0 && xPos<8 && yPos>=0 && yPos<8 && board[xPos][yPos]==null){
+        if (xPos>=0 && xPos<8 && board[xPos][yPos]==null){
+            possibleSquares.add(new Square(xPos, yPos));
+        }
+        if ((this.getColor()==Color.WHITE && xPos==6) || (this.getColor()==Color.BLACK && xPos==1)){
+            xPos = xPos + DIRECTION;
+            if (xPos>=0 && xPos<8 && board[xPos][yPos]==null){
                 possibleSquares.add(new Square(xPos, yPos));
             }
-            if (!isFirstMove) break;
-            isFirstMove = false;
-            xPos++;
         }
         
         return possibleSquares;

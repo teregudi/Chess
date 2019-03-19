@@ -16,6 +16,7 @@ public class ChessBoard {
     
     private ChessPiece[][] board;
     private boolean checkFlag;
+    private Square enPassant;
     
     private void setup(){
         board = new ChessPiece[8][8];
@@ -54,6 +55,7 @@ public class ChessBoard {
         board[7][7] = new Rook(Color.WHITE, new Square(7,7));
         
         checkFlag = false;
+        enPassant = null;
     }
     
     private void draw(){
@@ -128,7 +130,8 @@ public class ChessBoard {
             ChessPiece threat = threats.get(0);
             for (ChessPiece actualPiece : friendlyPieces) {
                 if (!(actualPiece instanceof King)){
-                    List<ChessPiece> targets = gatherLegalTargets(actualPiece, hostilePieces, friendlyKing);
+                    List<ChessPiece> targets = gatherLegalTargets(actualPiece, hostilePieces,
+                            friendlyKing);
                     if (targets.contains(threat)){
                         List<ChessPiece> threatList = new ArrayList<>();
                         threatList.add(threat);
@@ -144,7 +147,8 @@ public class ChessBoard {
                 if (squaresBetweenKingAndThreat!=null){
                     for (ChessPiece piece : friendlyPieces) {
                         if (!(piece instanceof King)){
-                            List<Square> legalSquares = gatherLegalMoves(piece, hostilePieces, friendlyKing);
+                            List<Square> legalSquares = gatherLegalMoves(piece, hostilePieces,
+                                    friendlyKing);
                             if (tryToIntervene(legalSquares, squaresBetweenKingAndThreat, piece)){
                                 return true;
                             }
@@ -174,10 +178,10 @@ public class ChessBoard {
     private boolean attemptToCapture(ChessPiece activePiece, List<ChessPiece> hostilePieces,
             ChessPiece king){
         List<ChessPiece> legalTargets = gatherLegalTargets(activePiece, hostilePieces, king);
-            if (!legalTargets.isEmpty()){
-                capturePiece(activePiece, legalTargets);
-                return true;
-            }
+        if (!legalTargets.isEmpty()){
+            capturePiece(activePiece, legalTargets);
+            return true;
+        }
         return false;
     }
     
@@ -187,14 +191,15 @@ public class ChessBoard {
         if (activePiece instanceof King && !checkFlag && ((King)activePiece).getCastling()){
             legalSquares = possibleCastling(activePiece, legalSquares, hostilePieces);
         }
-            if (!legalSquares.isEmpty()){
-                movePiece(activePiece, legalSquares);
-                return true;
-            }
+        if (!legalSquares.isEmpty()){
+            movePiece(activePiece, legalSquares);
+            return true;
+        }
         return false;
     }
     
-    private List<ChessPiece> gatherLegalTargets(ChessPiece activePiece, List<ChessPiece> hostilePieces, ChessPiece king){
+    private List<ChessPiece> gatherLegalTargets(ChessPiece activePiece, List<ChessPiece> hostilePieces,
+            ChessPiece king){
         List<ChessPiece> possibleTargets = activePiece.calculateTargets(board);
         List<ChessPiece> realTargets = new ArrayList<>();
         if (!possibleTargets.isEmpty()){
@@ -228,7 +233,8 @@ public class ChessBoard {
         return realTargets;
     }
     
-    private List<Square> gatherLegalMoves(ChessPiece activePiece, List<ChessPiece> hostilePieces, ChessPiece king){
+    private List<Square> gatherLegalMoves(ChessPiece activePiece, List<ChessPiece> hostilePieces,
+            ChessPiece king){
         List<Square> possibleSquares = activePiece.calculateMovement(board);
         List<Square> realSquares = new ArrayList<>();
         if (!possibleSquares.isEmpty()){
