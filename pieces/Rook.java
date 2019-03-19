@@ -6,8 +6,19 @@ import java.util.List;
 
 public class Rook extends ChessPiece{
     
+    private boolean castling;
+    
+    public boolean getCastling(){
+        return castling;
+    }
+    
+    public void falseCastling(){
+        castling = false;
+    }
+    
     public Rook(Color color, Square position) {
         super(color, position);
+        castling = true;
     }
 
     public List<ChessPiece> calculateTargets (ChessPiece[][] board){
