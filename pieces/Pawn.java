@@ -6,12 +6,10 @@ import java.util.List;
 
 public class Pawn extends ChessPiece{
     
-    private boolean isFirstMove;
     private final int DIRECTION;
     
     public Pawn(Color color, Square position) {
         super(color, position);
-        isFirstMove = true;
         if (this.getColor()==Color.WHITE) DIRECTION=-1;
         else DIRECTION=1;
     }
