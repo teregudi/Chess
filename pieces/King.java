@@ -36,7 +36,6 @@ public class King extends ChessPiece{
     
     public List<Square> calculateMovement(ChessPiece[][] board){
         List<Square> possibleSquares = new ArrayList<>();
-        
         for (int xPos = this.getPosition().getX()-1; xPos <= this.getPosition().getX()+1; xPos++) {
             for (int yPos = this.getPosition().getY()-1; yPos <= this.getPosition().getY()+1; yPos++) {
                 if (xPos>=0 && xPos<8 && yPos>=0 && yPos<8 && board[xPos][yPos]==null){

@@ -16,7 +16,9 @@ public class ChessBoard {
     
     private ChessPiece[][] board;
     private boolean checkFlag;
-    private Square enPassant;
+    private List<ChessPiece> friendlyPieces;
+    private List<ChessPiece> hostilePieces;
+    private ChessPiece friendlyKing;
     
     private void setup(){
         board = new ChessPiece[8][8];
@@ -55,7 +57,9 @@ public class ChessBoard {
         board[7][7] = new Rook(Color.WHITE, new Square(7,7));
         
         checkFlag = false;
-        enPassant = null;
+        
+        friendlyPieces = new ArrayList();
+        hostilePieces = new ArrayList<>();
     }
     
     private void draw(){
@@ -93,8 +97,8 @@ public class ChessBoard {
     private boolean letTheRoundBegin (Color color){
         
         //collecting friendly and hostile pieces, then shuffling the friendly for random order
-        List<ChessPiece> friendlyPieces = new ArrayList();
-        List<ChessPiece> hostilePieces = new ArrayList<>();
+        friendlyPieces.clear();
+        hostilePieces.clear();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (board[i][j]!=null){
@@ -113,71 +117,64 @@ public class ChessBoard {
         while (i<friendlyPieces.size() && !(friendlyPieces.get(i) instanceof King)){
             i++;
         }
-        ChessPiece friendlyKing = friendlyPieces.get(i);
+        friendlyKing = friendlyPieces.get(i);
         
         //calculating if it is check or not
         List<ChessPiece> threats = new ArrayList();
         for (ChessPiece hostilePiece : hostilePieces) {
             if (hostilePiece.canCaptureKing(board, friendlyKing)){
                 threats.add(hostilePiece);
-                checkFlag = true;
-                System.out.println("CHECK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             }
         }
+        if (!threats.isEmpty()){
+            return handleCheck(threats);
+        }
         
+        //if there's no check, regular round takes place
+        checkFlag = false;
+        for (ChessPiece actualPiece : friendlyPieces) {
+            if (attemptToCapture(actualPiece)) return true;
+        }
+        for (ChessPiece actualPiece : friendlyPieces) {
+            if (attemptToMove(actualPiece)) return true;
+        }
+        return false;
+    }
+    
+    private boolean handleCheck(List<ChessPiece> threats){
+        checkFlag = true;
+        System.out.println("CHECK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         //try to capture the threat
         if (threats.size()==1){
-            ChessPiece threat = threats.get(0);
             for (ChessPiece actualPiece : friendlyPieces) {
                 if (!(actualPiece instanceof King)){
-                    List<ChessPiece> targets = gatherLegalTargets(actualPiece, hostilePieces,
-                            friendlyKing);
-                    if (targets.contains(threat)){
-                        List<ChessPiece> threatList = new ArrayList<>();
-                        threatList.add(threat);
-                        capturePiece(actualPiece, threatList);
+                    List<ChessPiece> targets = gatherLegalTargets(actualPiece);
+                    if (targets.contains(threats.get(0))){
+                        capturePiece(actualPiece, threats);
                         return true;
                     }
                 }
             }
             //try to move between king and threat
-            if (threat instanceof Bishop || threat instanceof Rook || threat instanceof Queen){
-                List<Square> squaresBetweenKingAndThreat =
-                        calculateSquaresInCheck(friendlyKing, threat);
+            if (threats.get(0) instanceof Bishop || threats.get(0) instanceof Rook ||
+                    threats.get(0) instanceof Queen){
+                List<Square> squaresBetweenKingAndThreat = calculateSquaresInCheck(threats.get(0));
                 if (squaresBetweenKingAndThreat!=null){
-                    for (ChessPiece piece : friendlyPieces) {
-                        if (!(piece instanceof King)){
-                            List<Square> legalSquares = gatherLegalMoves(piece, hostilePieces,
-                                    friendlyKing);
-                            if (tryToIntervene(legalSquares, squaresBetweenKingAndThreat, piece)){
-                                return true;
-                            }
+                    for (ChessPiece actualPiece : friendlyPieces) {
+                        List<Square> legalSquares = gatherLegalMoves(actualPiece);
+                        if (tryToIntervene(legalSquares, squaresBetweenKingAndThreat, actualPiece)){
+                            return true;
                         }
                     }
                 }
             }
         }
         //king tries to handle check on his own
-        if (!threats.isEmpty()){
-            if (!attemptToCapture(friendlyKing, hostilePieces, friendlyKing)){
-                return attemptToMove(friendlyKing, hostilePieces, friendlyKing);
-            } else return true;
-        }
-        
-        //if there's no check, regular round takes place
-        checkFlag = false;
-        for (ChessPiece actualPiece : friendlyPieces) {
-            if (attemptToCapture(actualPiece, hostilePieces, friendlyKing)) return true;
-        }
-        for (ChessPiece actualPiece : friendlyPieces) {
-            if (attemptToMove(actualPiece, hostilePieces, friendlyKing)) return true;
-        }
-        return false;
+        return attemptToCapture(friendlyKing)? true : attemptToMove(friendlyKing);
     }
     
-    private boolean attemptToCapture(ChessPiece activePiece, List<ChessPiece> hostilePieces,
-            ChessPiece king){
-        List<ChessPiece> legalTargets = gatherLegalTargets(activePiece, hostilePieces, king);
+    private boolean attemptToCapture(ChessPiece activePiece){
+        List<ChessPiece> legalTargets = gatherLegalTargets(activePiece);
         if (!legalTargets.isEmpty()){
             capturePiece(activePiece, legalTargets);
             return true;
@@ -185,11 +182,10 @@ public class ChessBoard {
         return false;
     }
     
-    private boolean attemptToMove(ChessPiece activePiece, List<ChessPiece> hostilePieces,
-            ChessPiece king){
-        List<Square> legalSquares = gatherLegalMoves(activePiece, hostilePieces, king);
+    private boolean attemptToMove(ChessPiece activePiece){
+        List<Square> legalSquares = gatherLegalMoves(activePiece);
         if (activePiece instanceof King && !checkFlag && ((King)activePiece).getCastling()){
-            legalSquares = possibleCastling(activePiece, legalSquares, hostilePieces);
+            legalSquares = possibleCastling(activePiece, legalSquares);
         }
         if (!legalSquares.isEmpty()){
             movePiece(activePiece, legalSquares);
@@ -198,8 +194,7 @@ public class ChessBoard {
         return false;
     }
     
-    private List<ChessPiece> gatherLegalTargets(ChessPiece activePiece, List<ChessPiece> hostilePieces,
-            ChessPiece king){
+    private List<ChessPiece> gatherLegalTargets(ChessPiece activePiece){
         List<ChessPiece> possibleTargets = activePiece.calculateTargets(board);
         List<ChessPiece> realTargets = new ArrayList<>();
         if (!possibleTargets.isEmpty()){
@@ -219,7 +214,7 @@ public class ChessBoard {
                         allClear++;
                         continue;
                     }
-                    if (!hostPiece.canCaptureKing(board, king)){
+                    if (!hostPiece.canCaptureKing(board, friendlyKing)){
                         allClear++;
                     }
                 }
@@ -233,8 +228,7 @@ public class ChessBoard {
         return realTargets;
     }
     
-    private List<Square> gatherLegalMoves(ChessPiece activePiece, List<ChessPiece> hostilePieces,
-            ChessPiece king){
+    private List<Square> gatherLegalMoves(ChessPiece activePiece){
         List<Square> possibleSquares = activePiece.calculateMovement(board);
         List<Square> realSquares = new ArrayList<>();
         if (!possibleSquares.isEmpty()){
@@ -250,7 +244,7 @@ public class ChessBoard {
                         }
                         continue;
                     }
-                    if (!hostPiece.canCaptureKing(board, king)){
+                    if (!hostPiece.canCaptureKing(board, friendlyKing)){
                         allClear++;
                     }
                 }
@@ -311,7 +305,6 @@ public class ChessBoard {
             for (Square interveningSquare : interveningSquares) {
                 if (legalSquare.equals(interveningSquare)){
                     okaySquares.add(legalSquare);
-                    continue;
                 }
             }
         }
@@ -322,16 +315,16 @@ public class ChessBoard {
         return false;
     }
     
-    private List<Square> calculateSquaresInCheck(ChessPiece king, ChessPiece threat){
+    private List<Square> calculateSquaresInCheck(ChessPiece threat){
         List<Square> protectingSquares = null;
         if (threat instanceof Rook){
-            protectingSquares = ((Rook)threat).calculatingProtectingSquares(king);
+            protectingSquares = ((Rook)threat).calculatingProtectingSquares(friendlyKing);
         }
         if (threat instanceof Bishop){
-            protectingSquares = ((Bishop)threat).calculatingProtectingSquares(king);
+            protectingSquares = ((Bishop)threat).calculatingProtectingSquares(friendlyKing);
         }
         if (threat instanceof Queen){
-            protectingSquares = ((Queen)threat).calculatingProtectingSquares(king);
+            protectingSquares = ((Queen)threat).calculatingProtectingSquares(friendlyKing);
         }
         return protectingSquares;
     }
@@ -360,8 +353,7 @@ public class ChessBoard {
         System.out.println(pawn+" has been promoted to "+piece);
     }
     
-    private List<Square> possibleCastling(ChessPiece activePiece, List<Square> legalSquares,
-            List<ChessPiece> hostilePieces){
+    private List<Square> possibleCastling(ChessPiece activePiece, List<Square> legalSquares){
         int xPos = activePiece.getPosition().getX();
         int yPos = activePiece.getPosition().getY();
         
