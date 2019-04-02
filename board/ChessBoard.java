@@ -20,7 +20,7 @@ public class ChessBoard {
     private List<ChessPiece> hostilePieces;
     private ChessPiece friendlyKing;
     
-    private void setup(){
+    public ChessPiece[][] setup(){
         board = new ChessPiece[8][8];
         board[0][0] = new Rook(Color.BLACK, new Square(0,0));
         board[0][1] = new Knight(Color.BLACK, new Square(0,1));
@@ -60,6 +60,12 @@ public class ChessBoard {
         
         friendlyPieces = new ArrayList();
         hostilePieces = new ArrayList<>();
+        
+        return board;
+    }
+    
+    public ChessPiece[][] getBoard(){
+        return board;
     }
     
     private void draw(){
@@ -93,8 +99,8 @@ public class ChessBoard {
         } while (counter<100);
         return null;
     }
-    
-    private boolean letTheRoundBegin (Color color){
+   
+    public boolean letTheRoundBegin (Color color){
         
         //collecting friendly and hostile pieces, then shuffling the friendly for random order
         friendlyPieces.clear();
