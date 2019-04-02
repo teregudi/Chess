@@ -34,7 +34,8 @@ public class Pawn extends ChessPiece{
         if (xPos>=0 && xPos<8 && board[xPos][yPos]==null){
             possibleSquares.add(new Square(xPos, yPos));
         }
-        if ((this.getColor()==Color.WHITE && xPos==6) || (this.getColor()==Color.BLACK && xPos==1)){
+        if ((this.getColor()==Color.WHITE && this.getPosition().getX()==6) ||
+                (this.getColor()==Color.BLACK && this.getPosition().getX()==1)){
             xPos = xPos + DIRECTION;
             if (xPos>=0 && xPos<8 && board[xPos][yPos]==null){
                 possibleSquares.add(new Square(xPos, yPos));
